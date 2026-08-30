@@ -126,11 +126,16 @@ const generatedAt = computed(() => {
 
   <footer class="site-footer">
     <p>Static file download site — 静态文件托管与分发</p>
-    <p class="footer-note">您正在访问根目录。如有需要，请联系站点管理员</p>
+    <p class="footer-note">
+      您正在访问根目录。如有遇到问题或建议，请联系站点管理员
+    </p>
     <p class="footer-mail">
       <font-awesome-icon icon="envelope" /> contact@xindev.com
     </p>
     <p v-if="generatedAt" class="footer-time">索引生成于 {{ generatedAt }}</p>
+    <p class="footer-about">
+      <router-link to="/about">关于本站</router-link>
+    </p>
     <p class="footer-host">
       <span class="footer-host-text">此网站托管于</span>
       <img
