@@ -1,4 +1,4 @@
-import { ref, computed, type ComputedRef } from 'vue'
+import { ref, computed, watch, type ComputedRef } from 'vue'
 import type { FileItem, FilesIndex } from '../types'
 
 export type SortKey = 'date' | 'name' | 'size'
@@ -15,6 +15,8 @@ export function useFiles() {
   const selectedDir = ref('all')
   const sortKey = ref<SortKey>('date')
   const sortDir = ref<SortDir>('desc')
+  const currentPage = ref(1)
+  const pageSize = ref(20)
 
   const load = async () => {
     loading.value = true
@@ -55,8 +57,10 @@ export function useFiles() {
         f.name.toLowerCase().includes(kw) ||
         f.dir.toLowerCase().includes(kw) ||
         f.ext.toLowerCase().includes(kw)
-      const matchExt = selectedExt.value === 'all' || f.ext === selectedExt.value
-      const matchDir = selectedDir.value === 'all' || f.dir === selectedDir.value
+      const matchExt =
+        selectedExt.value === 'all' || f.ext === selectedExt.value
+      const matchDir =
+        selectedDir.value === 'all' || f.dir === selectedDir.value
       return matchKw && matchExt && matchDir
     })
 
@@ -69,16 +73,35 @@ export function useFiles() {
           return (a.sizeBytes - b.sizeBytes) * dir
         case 'date':
         default:
-          return a.modified.localeCompare(b.modified) * dir || a.name.localeCompare(b.name) * dir
+          return (
+            a.modified.localeCompare(b.modified) * dir ||
+            a.name.localeCompare(b.name) * dir
+          )
       }
     })
     return list
   })
 
+  /** 分页后的当前页数据 */
+  const paged = computed(() => {
+    const start = (currentPage.value - 1) * pageSize.value
+    return filtered.value.slice(start, start + pageSize.value)
+  })
+
+  /** 总页数 */
+  const totalPages = computed(
+    () => Math.ceil(filtered.value.length / pageSize.value) || 1,
+  )
+
   /** 当前结果总体积 */
   const filteredSize = computed(() => {
     const bytes = filtered.value.reduce((s, f) => s + f.sizeBytes, 0)
     return formatBytes(bytes)
+  })
+
+  /** 筛选条件变化时回到第 1 页 */
+  watch([keyword, selectedExt, selectedDir, sortKey, sortDir], () => {
+    currentPage.value = 1
   })
 
   /** 切换排序（同一字段再点则反转方向） */
@@ -91,19 +114,41 @@ export function useFiles() {
     }
   }
 
+  function setPage(page: number) {
+    currentPage.value = page
+  }
+
   function reset() {
     keyword.value = ''
     selectedExt.value = 'all'
     selectedDir.value = 'all'
     sortKey.value = 'date'
     sortDir.value = 'desc'
+    currentPage.value = 1
   }
 
   return {
-    files, meta, loading, error,
-    keyword, selectedExt, selectedDir, sortKey, sortDir,
-    exts, dirs, filtered, filteredSize,
-    load, toggleSort, reset,
+    files,
+    meta,
+    loading,
+    error,
+    keyword,
+    selectedExt,
+    selectedDir,
+    sortKey,
+    sortDir,
+    exts,
+    dirs,
+    filtered,
+    filteredSize,
+    currentPage,
+    pageSize,
+    paged,
+    totalPages,
+    load,
+    toggleSort,
+    setPage,
+    reset,
   }
 }
 
@@ -111,6 +156,7 @@ export function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B'
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+  if (bytes < 1024 * 1024 * 1024)
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`
   return `${(bytes / 1024 / 1024 / 1024).toFixed(2)} GB`
 }

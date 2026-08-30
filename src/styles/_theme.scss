@@ -1,0 +1,42 @@
+// ============================================
+// 主题令牌 —— 所有颜色与设计变量统一管理
+// 切换深色只需给 html 加上 .dark 类即可
+// ============================================
+
+:root {
+  --bg: #f6f7fb;
+  --bg-grad-a: #eef2ff;
+  --bg-grad-b: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f2f4f9;
+  --border: #e4e7ee;
+  --text: #1a1d24;
+  --text-dim: #6b7280;
+  --text-faint: #9aa2b1;
+  --primary: #4f46e5;
+  --primary-soft: #eef2ff;
+  --accent: #06b6d4;
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 8px 24px rgba(16, 24, 40, 0.06);
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06);
+  --radius: 14px;
+  --radius-sm: 9px;
+  color-scheme: light;
+}
+
+:root.dark {
+  --bg: #0e1117;
+  --bg-grad-a: #161b26;
+  --bg-grad-b: #0e1117;
+  --surface: #171c26;
+  --surface-2: #1e242f;
+  --border: #2a313d;
+  --text: #e6e9ef;
+  --text-dim: #9aa4b5;
+  --text-faint: #6b7686;
+  --primary: #818cf8;
+  --primary-soft: #232a3d;
+  --accent: #22d3ee;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
+}
