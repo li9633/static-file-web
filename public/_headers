@@ -1,0 +1,11 @@
+# Cloudflare Pages 特殊文件：必须放在部署根目录（dist/）才生效
+# 你之前放在 file/ 子目录里是不生效的，这里已修正
+
+# /file/ 下的文件统一以附件形式下载（浏览器不直接打开）
+/file/*
+  Content-Disposition: attachment
+  Cache-Control: public, max-age=3600
+
+# 索引 JSON 不缓存，保证每次部署后立即可见最新列表
+/files.json
+  Cache-Control: no-cache
